@@ -1,6 +1,6 @@
 <template>
   <div class="flex-container">
-    <div id="problem-main">
+    <div id="problem-main" v-if="tag === 'problem'">
       <!--problem main-->
       <Panel :padding="40" shadow>
         <div slot="title">{{problem.title}}</div>
@@ -101,6 +101,54 @@
       </Card>
     </div>
 
+    <div id="discuss-main" v-if="tag === 'discuss'">
+      <Panel :padding="0" shadow>
+        <div slot="title">{{problem.title}}</div>
+      </Panel>
+      <Card :padding="20" dis-hover style="margin-top: 20px">
+        <!--<div slot="extra">-->
+        <!--<ul class="filter">-->
+          <!--<li>-->
+            <!--<Dropdown @on-click="filterByDifficulty">-->
+              <!--<span>{{query.difficulty === '' ? 'Difficulty' : query.difficulty}}-->
+                <!--<Icon type="arrow-down-b"></Icon>-->
+              <!--</span>-->
+              <!--<Dropdown-menu slot="list">-->
+                <!--<Dropdown-item name="">All</Dropdown-item>-->
+                <!--<Dropdown-item name="Low">Low</Dropdown-item>-->
+                <!--<Dropdown-item name="Mid">Mid</Dropdown-item>-->
+                <!--<Dropdown-item name="High">High</Dropdown-item>-->
+              <!--</Dropdown-menu>-->
+            <!--</Dropdown>-->
+          <!--</li>-->
+          <!--<li>-->
+            <!--<i-switch size="large" @on-change="handleTagsVisible">-->
+              <!--<span slot="open">Tags</span>-->
+              <!--<span slot="close">Tags</span>-->
+            <!--</i-switch>-->
+          <!--</li>-->
+          <!--<li>-->
+            <!--<Input v-model="query.keyword"-->
+                   <!--@on-enter="filterByKeyword"-->
+                   <!--@on-click="filterByKeyword"-->
+                   <!--placeholder="keyword"-->
+                   <!--icon="ios-search-strong"/>-->
+          <!--</li>-->
+          <!--<li>-->
+            <!--<Button type="info" @click="onReset">-->
+              <!--<Icon type="refresh"></Icon>-->
+              <!--Reset-->
+            <!--</Button>-->
+          <!--</li>-->
+        <!--</ul>-->
+      <!--</div>-->
+      <Table style="width: 100%; font-size: 16px;"
+             :columns="discussTableColumns"
+             :data="discussList"
+             disabled-hover></Table>
+      </Card>
+    </div>
+
     <div id="right-column">
       <VerticalMenu @on-click="handleRoute">
         <template v-if="this.contestID">
@@ -114,6 +162,18 @@
             Announcements
           </VerticalMenu-item>
         </template>
+
+        <VerticalMenu-item v-if="!this.contestID || OIContestRealTimePermission"
+                           @click.native="changeTag('problem')">
+          <Icon type="navicon-round"></Icon>
+          Problem
+        </VerticalMenu-item>
+
+        <VerticalMenu-item v-if="!this.contestID || OIContestRealTimePermission"
+                           @click.native="changeTag('discuss')">
+          <Icon type="navicon-round"></Icon>
+          Discuss
+        </VerticalMenu-item>
 
         <VerticalMenu-item v-if="!this.contestID || OIContestRealTimePermission" :route="submissionRoute">
           <Icon type="navicon-round"></Icon>
@@ -195,15 +255,14 @@
 </template>
 
 <script>
-  import {mapGetters, mapActions} from 'vuex'
-  import {types} from '../../../../store'
+  import { mapActions, mapGetters } from 'vuex'
+  import { types } from '../../../../store'
   import CodeMirror from '@oj/components/CodeMirror.vue'
   import storage from '@/utils/storage'
-  import {FormMixin} from '@oj/components/mixins'
-  import {JUDGE_STATUS, CONTEST_STATUS, buildProblemCodeKey} from '@/utils/constants'
+  import { FormMixin } from '@oj/components/mixins'
+  import { buildProblemCodeKey, CONTEST_STATUS, JUDGE_STATUS } from '@/utils/constants'
   import api from '@oj/api'
-  import {pie, largePie} from './chartData'
-
+  import { largePie, pie } from './chartData'
   // 只显示这些状态的图形占用
   const filtedStatus = ['-1', '-2', '0', '1', '2', '3', '4', '8']
 
@@ -250,7 +309,58 @@
         largePieInitOpts: {
           width: '500',
           height: '480'
-        }
+        },
+        tag: 'problem',
+        // Discuss
+        discussTableColumns: [
+          {
+            title: '#',
+            key: '_id',
+            width: 80,
+            render: (h, params) => {
+              return h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'large'
+                },
+                on: {
+                  click: () => {
+                    this.$router.push({name: 'problem-details', params: {problemID: params.row._id}})
+                  }
+                },
+                style: {
+                  padding: '2px 0'
+                }
+              }, params.row._id)
+            }
+          },
+          {
+            title: 'Title',
+            key: 'title',
+            width: 300
+          },
+          {
+            title: 'Creator',
+            key: 'creator'
+          },
+          {
+            title: 'Created Time',
+            key: 'created_time'
+          },
+          {
+            title: 'Last reply Time',
+            key: 'last_reply_time'
+          },
+          {
+            title: 'Votes',
+            key: 'Votes'
+          }
+        ],
+        discussList: [
+          {
+            _id: 1
+          }
+        ]
       }
     },
     beforeRouteEnter (to, from, next) {
@@ -266,7 +376,7 @@
       }
     },
     mounted () {
-      this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, {menu: false})
+      this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, { menu: false })
       this.init()
     },
     methods: {
@@ -279,7 +389,7 @@
         api[func](this.problemID, this.contestID).then(res => {
           this.$Loading.finish()
           let problem = res.data.data
-          this.changeDomTitle({title: problem.title})
+          this.changeDomTitle({ title: problem.title })
           api.submissionExists(problem.id).then(res => {
             this.submissionExists = res.data.data
           })
@@ -310,8 +420,8 @@
         }
         let acNum = problemData.accepted_number
         let data = [
-          {name: 'WA', value: problemData.submission_number - acNum},
-          {name: 'AC', value: acNum}
+          { name: 'WA', value: problemData.submission_number - acNum },
+          { name: 'AC', value: acNum }
         ]
         this.pie.series[0].data = data
         // 只把大图的AC selected下，这里需要做一下deepcopy
@@ -332,9 +442,9 @@
 
         let largePieData = []
         Object.keys(problemData.statistic_info).forEach(ele => {
-          largePieData.push({name: JUDGE_STATUS[ele].short, value: problemData.statistic_info[ele]})
+          largePieData.push({ name: JUDGE_STATUS[ele].short, value: problemData.statistic_info[ele] })
         })
-        largePieData.push({name: 'AC', value: acCount})
+        largePieData.push({ name: 'AC', value: acCount })
         this.largePie.series[0].data = largePieData
       },
       handleRoute (route) {
@@ -393,7 +503,7 @@
           return
         }
         this.submissionId = ''
-        this.result = {result: 9}
+        this.result = { result: 9 }
         this.submitting = true
         let data = {
           problem_id: this.problem.id,
@@ -457,6 +567,18 @@
       },
       onCopyError (e) {
         this.$error('Failed to copy code')
+      },
+      changeTag (tag) {
+        this.tag = tag
+      },
+      handleTest () {
+        window.fetch('http://localhost:8081/topic/', {
+          method: 'get'
+        }).then(res => {
+          return res.json()
+        }).then(data => {
+          console.log(data)
+        })
       }
     },
     computed: {
@@ -475,9 +597,9 @@
       },
       submissionRoute () {
         if (this.contestID) {
-          return {name: 'contest-submission-list', query: {problemID: this.problemID}}
+          return { name: 'contest-submission-list', query: { problemID: this.problemID } }
         } else {
-          return {name: 'submission-list', query: {problemID: this.problemID}}
+          return { name: 'submission-list', query: { problemID: this.problemID } }
         }
       }
     },
@@ -485,7 +607,7 @@
       // 防止切换组件后仍然不断请求
       clearInterval(this.refreshStatus)
 
-      this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, {menu: true})
+      this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, { menu: true })
       storage.set(buildProblemCodeKey(this.problem._id, from.params.contestID), {
         code: this.code,
         language: this.language,
@@ -511,6 +633,12 @@
       flex: auto;
       margin-right: 18px;
     }
+
+    #discuss-main {
+      flex: auto;
+      margin-right: 18px;
+    }
+
     #right-column {
       flex: none;
       width: 220px;
@@ -519,22 +647,27 @@
 
   #problem-content {
     margin-top: -50px;
+
     .title {
       font-size: 20px;
       font-weight: 400;
       margin: 25px 0 8px 0;
       color: #3091f2;
+
       .copy {
         padding-left: 8px;
       }
     }
+
     p.content {
       margin-left: 25px;
       margin-right: 20px;
       font-size: 15px
     }
+
     .sample {
       align-items: stretch;
+
       &-input, &-output {
         width: 50%;
         flex: 1 1 auto;
@@ -542,6 +675,7 @@
         flex-direction: column;
         margin-right: 5%;
       }
+
       pre {
         flex: 1 1 auto;
         align-self: stretch;
@@ -554,15 +688,19 @@
   #submit-code {
     margin-top: 20px;
     margin-bottom: 20px;
+
     .status {
       float: left;
+
       span {
         margin-right: 10px;
         margin-left: 10px;
       }
     }
+
     .captcha-container {
       display: inline-block;
+
       .captcha-code {
         width: auto;
         margin-top: -20px;
@@ -574,17 +712,22 @@
   #info {
     margin-bottom: 20px;
     margin-top: 20px;
+
     ul {
       list-style-type: none;
+
       li {
         border-bottom: 1px dotted #e9eaec;
         margin-bottom: 10px;
+
         p {
           display: inline-block;
         }
+
         p:first-child {
           width: 90px;
         }
+
         p:last-child {
           float: right;
         }
@@ -601,6 +744,7 @@
       height: 250px;
       width: 210px;
     }
+
     #detail {
       position: absolute;
       right: 10px;
