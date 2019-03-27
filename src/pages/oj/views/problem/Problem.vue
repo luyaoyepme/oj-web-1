@@ -1,6 +1,6 @@
 <template>
   <div class="flex-container">
-    <div id="problem-main" v-if="tag === 'problem'">
+    <div id="problem-main">
       <!--problem main-->
       <Panel :padding="40" shadow>
         <div slot="title">{{problem.title}}</div>
@@ -101,54 +101,6 @@
       </Card>
     </div>
 
-    <div id="discuss-main" v-if="tag === 'discuss'">
-      <Panel :padding="0" shadow>
-        <div slot="title">{{problem.title}}</div>
-      </Panel>
-      <Card :padding="20" dis-hover style="margin-top: 20px">
-        <!--<div slot="extra">-->
-        <!--<ul class="filter">-->
-          <!--<li>-->
-            <!--<Dropdown @on-click="filterByDifficulty">-->
-              <!--<span>{{query.difficulty === '' ? 'Difficulty' : query.difficulty}}-->
-                <!--<Icon type="arrow-down-b"></Icon>-->
-              <!--</span>-->
-              <!--<Dropdown-menu slot="list">-->
-                <!--<Dropdown-item name="">All</Dropdown-item>-->
-                <!--<Dropdown-item name="Low">Low</Dropdown-item>-->
-                <!--<Dropdown-item name="Mid">Mid</Dropdown-item>-->
-                <!--<Dropdown-item name="High">High</Dropdown-item>-->
-              <!--</Dropdown-menu>-->
-            <!--</Dropdown>-->
-          <!--</li>-->
-          <!--<li>-->
-            <!--<i-switch size="large" @on-change="handleTagsVisible">-->
-              <!--<span slot="open">Tags</span>-->
-              <!--<span slot="close">Tags</span>-->
-            <!--</i-switch>-->
-          <!--</li>-->
-          <!--<li>-->
-            <!--<Input v-model="query.keyword"-->
-                   <!--@on-enter="filterByKeyword"-->
-                   <!--@on-click="filterByKeyword"-->
-                   <!--placeholder="keyword"-->
-                   <!--icon="ios-search-strong"/>-->
-          <!--</li>-->
-          <!--<li>-->
-            <!--<Button type="info" @click="onReset">-->
-              <!--<Icon type="refresh"></Icon>-->
-              <!--Reset-->
-            <!--</Button>-->
-          <!--</li>-->
-        <!--</ul>-->
-      <!--</div>-->
-      <Table style="width: 100%; font-size: 16px;"
-             :columns="discussTableColumns"
-             :data="discussList"
-             disabled-hover></Table>
-      </Card>
-    </div>
-
     <div id="right-column">
       <VerticalMenu @on-click="handleRoute">
         <template v-if="this.contestID">
@@ -164,13 +116,7 @@
         </template>
 
         <VerticalMenu-item v-if="!this.contestID || OIContestRealTimePermission"
-                           @click.native="changeTag('problem')">
-          <Icon type="navicon-round"></Icon>
-          Problem
-        </VerticalMenu-item>
-
-        <VerticalMenu-item v-if="!this.contestID || OIContestRealTimePermission"
-                           @click.native="changeTag('discuss')">
+                           :route="DiscussRoute">
           <Icon type="navicon-round"></Icon>
           Discuss
         </VerticalMenu-item>
@@ -309,58 +255,7 @@
         largePieInitOpts: {
           width: '500',
           height: '480'
-        },
-        tag: 'problem',
-        // Discuss
-        discussTableColumns: [
-          {
-            title: '#',
-            key: '_id',
-            width: 80,
-            render: (h, params) => {
-              return h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'large'
-                },
-                on: {
-                  click: () => {
-                    this.$router.push({name: 'problem-details', params: {problemID: params.row._id}})
-                  }
-                },
-                style: {
-                  padding: '2px 0'
-                }
-              }, params.row._id)
-            }
-          },
-          {
-            title: 'Title',
-            key: 'title',
-            width: 300
-          },
-          {
-            title: 'Creator',
-            key: 'creator'
-          },
-          {
-            title: 'Created Time',
-            key: 'created_time'
-          },
-          {
-            title: 'Last reply Time',
-            key: 'last_reply_time'
-          },
-          {
-            title: 'Votes',
-            key: 'Votes'
-          }
-        ],
-        discussList: [
-          {
-            _id: 1
-          }
-        ]
+        }
       }
     },
     beforeRouteEnter (to, from, next) {
@@ -568,9 +463,6 @@
       onCopyError (e) {
         this.$error('Failed to copy code')
       },
-      changeTag (tag) {
-        this.tag = tag
-      },
       handleTest () {
         window.fetch('http://localhost:8081/topic/', {
           method: 'get'
@@ -600,6 +492,14 @@
           return { name: 'contest-submission-list', query: { problemID: this.problemID } }
         } else {
           return { name: 'submission-list', query: { problemID: this.problemID } }
+        }
+      },
+      DiscussRoute () {
+        if (this.contestID) {
+          // TODO
+          return { name: 'contest-submission-list', query: { problemID: this.problemID } }
+        } else {
+          return { name: 'discuss-list', query: { problemID: this.problemID } }
         }
       }
     },
