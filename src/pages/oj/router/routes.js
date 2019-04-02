@@ -14,6 +14,8 @@ import {
   ResetPassword,
   SubmissionDetails,
   SubmissionList,
+  DiscussList,
+  DiscussDetails,
   UserHome
 } from '../views'
 
@@ -68,6 +70,18 @@ export default [
     path: '/status/:id/',
     meta: {title: 'Submission Details'},
     component: SubmissionDetails
+  },
+  {
+    name: 'discuss-list',
+    path: '/discuss',
+    meta: {title: 'Discuss List'},
+    component: DiscussList
+  },
+  {
+    name: 'discuss-details',
+    path: '/discuss/:id/',
+    meta: {title: 'Discuss Details'},
+    component: DiscussDetails
   },
   {
     name: 'contest-list',
