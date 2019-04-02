@@ -15,6 +15,7 @@
 </template>
 
 <script>
+  import api from '@oj/api.js'
   export default {
     name: 'DiscussList',
     data () {
@@ -68,6 +69,19 @@
             _id: 1
           }
         ]
+      }
+    },
+    mounted () {
+      this.init()
+    },
+    methods: {
+      init () {
+        this.getDiscussList()
+      },
+      getDiscussList () {
+        console.log('1')
+        api.getDiscussList()
+        console.log('out')
       }
     }
   }

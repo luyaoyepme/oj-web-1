@@ -6,6 +6,19 @@ Vue.prototype.$http = axios
 axios.defaults.baseURL = '/api'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+axios.defaults.withCredentials = true
+axios.interceptors.request.use(
+  config => {
+    config.headers = {
+      'Content-Type': 'application/json'
+    }
+    return config
+  },
+  err => {
+    return Promise.reject(err)
+  }
+)
 
 export default {
   getWebsiteConf (params) {
@@ -262,6 +275,22 @@ export default {
     return ajax('admin/contest/acm_helper', 'put', {
       data
     })
+  },
+  getDiscussList () {
+    axios({
+      method: 'post',
+      url: 'http://localhost:8081/api/topic/create',
+      data: {
+        title: '201904021450',
+        content: '111'
+      }
+    })
+      .then(function (response) {
+        console.log(response)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
   }
 }
 
