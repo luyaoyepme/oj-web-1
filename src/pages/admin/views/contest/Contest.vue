@@ -147,10 +147,14 @@
         }
       },
       setDiscussStatus (status) {
-        console.log(status)
         let flag = status + 0
         console.log(flag)
-        api.setDiscussStatus(this.$route.params.contestId, flag)
+        if (this.$route.name === 'create-contest') {
+          api.setDiscussStatus(this.$route.params.contestId, flag)
+        } else {
+          console.log('i m changing status...')
+          api.changeDiscussStatus(this.$route.params.contestId, flag)
+        }
       }
     },
     mounted () {
@@ -171,7 +175,7 @@
         }).catch(() => {
         })
         api.getContestCommentStatus(this.$route.params.contestId).then(res => {
-         // console.log(res.data)
+          console.log(res.data)
           if (res.data === 1) {
             this.discussStatus = true
           } else {

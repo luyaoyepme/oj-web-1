@@ -154,12 +154,12 @@
         let id = this.$route.query.problemID
         let query = this.$route.query
         this.query.page = parseInt(query.page) || 1
-        this.query.contestId = this.$route.query.contestID
+        this.query.contestId = this.$route.query.contestId
         this.query.keyword = query.keyword || ''
         this.routeName = this.$route.name
         this.query.problemID = id
         this.showDialog(this.showEditDiscussDialog)
-        this.getDiscussList(id, this.query.contestId)
+        this.getDiscussList(id, this.$route.query.contestId)
         if (this.query.page < 1) {
           this.query.page = 1
         }
@@ -173,14 +173,18 @@
       },
       // 获取topic列表
       getDiscussList (problemId, contestId) {
+        console.log(problemId, contestId)
         if (contestId) {
           api.getContestDiscussList(problemId, contestId).then(res => {
+            console.log('i m getting contest discuss')
             this.discussList = res.data
+            // console.log(res.data)
           })
         } else {
+          console.log('i m getting problem discuss')
           api.getDiscussList(problemId).then(res => {
             this.discussList = res.data
-            console.log(res.data)
+            // console.log(res.data)
           })
         }
       },

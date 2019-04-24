@@ -16,7 +16,6 @@ import {
   SubmissionList,
   DiscussList,
   DiscussDetails,
-  test,
   UserHome
 } from '../views'
 
@@ -198,11 +197,5 @@ export default [
     path: '*',
     meta: {title: '404'},
     component: NotFound
-  },
-  {
-    path: '/test',
-    name: 'test',
-    meta: {title: 'test'},
-    component: test
   }
 ]

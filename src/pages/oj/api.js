@@ -207,7 +207,7 @@ export default {
     })
   },
   submitCode (data) {
-    return ajax('submission', data})
+    return ajax('submission', {data})
   },
   getSubmissionList (offset, limit, params) {
     params.limit = limit
@@ -290,11 +290,11 @@ export default {
       // },
       mode: 'no-cors'
     }).then(res => {
-      console.log(res)
+      // console.log(res)
       return res.json()
     }).then(json => {
       // console.log('ok')
-      // console.log('获取的结果', json.data)
+      console.log('获取的结果', json.data)
       return json
     })
   },
@@ -312,7 +312,7 @@ export default {
       return res.json()
     }).then(json => {
       // console.log('ok')
-      // console.log('获取的结果', json.data)
+      console.log('获取的结果', json.data)
       return json
     })
   },
@@ -387,7 +387,29 @@ export default {
   createNewTopic (data) {
     return new Promise((resolve, reject) => {
       axios({
-        url: `http://localhost:8081/api/topics?title=${data.title}&content=${data.content}&problemId=${data.problemId}`,
+        url: `http://localhost:8081/api/topics`,
+        method: 'post',
+        data: {
+          title: data.title,
+          content: data.content,
+          problemId: data.problemId
+        }
+      })
+        .then((res) => {
+          resolve(res.data)
+          Vue.prototype.$success('Succeeded')
+          // console.log(res)
+        })
+        .catch(function (error) {
+          reject(error)
+          // console.log(error);
+        })
+    })
+  },
+  createNewContestTopic (data) {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `http://localhost:8081/api/contests/problem/topic`,
         method: 'post',
         data: {
           title: data.title,

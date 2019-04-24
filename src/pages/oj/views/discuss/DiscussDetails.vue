@@ -128,7 +128,7 @@
         }
       },
       submmitComment (data = undefined) {
-        let funName = ''
+        // let funName = ''
         data = {
           id: this.topicID,
           content: this.comment.content

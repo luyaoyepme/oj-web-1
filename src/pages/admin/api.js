@@ -298,11 +298,28 @@ export default {
   setDiscussStatus (contestId, flag) {
     return new Promise((resolve, reject) => {
       axios({
-        url: `http://localhost:8081/api/contests/${contestId}/discuss-status?discussStatus=${flag}`,
+        url: `http://localhost:8081/api/contests/${contestId}/discuss-status`,
         method: 'post',
         data: {
-          flag: flag
+          discussStatus: flag
         }
+      })
+        .then((res) => {
+          resolve(res.data)
+          Vue.prototype.$success('Succeeded')
+          // console.log(res)
+        })
+        .catch(function (error) {
+          reject(error)
+          // console.log(error);
+        })
+    })
+  },
+  changeDiscussStatus (contestId, flag) {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `http://localhost:8081/api/contests/${contestId}/discuss-status?discussStatus=${flag}`,
+        method: 'put'
       })
         .then((res) => {
           resolve(res.data)
