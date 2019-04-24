@@ -166,6 +166,7 @@
         this.$router.push({name: 'contest-problem-list', params: {contestId}})
       },
       handleVisibleSwitch (row) {
+        console.log(row)
         api.editContest(row)
       }
     },

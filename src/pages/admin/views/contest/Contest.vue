@@ -36,13 +36,13 @@
               <el-input v-model="contest.password" :placeholder="$t('m.Contest_Password')"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item :label="$t('m.Contest_Rule_Type')">
               <el-radio class="radio" v-model="contest.rule_type" label="ACM" :disabled="disableRuleType">ACM</el-radio>
               <el-radio class="radio" v-model="contest.rule_type" label="OI" :disabled="disableRuleType">OI</el-radio>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item :label="$t('m.Real_Time_Rank')">
               <el-switch
                 v-model="contest.real_time_rank"
@@ -51,12 +51,22 @@
               </el-switch>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item :label="$t('m.Contest_Status')">
               <el-switch
                 v-model="contest.visible"
                 active-text=""
                 inactive-text="">
+              </el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="discussStatus">
+              <el-switch
+                v-model="discussStatus"
+                active-text=""
+                inactive-text=""
+                @change="setDiscussStatus">
               </el-switch>
             </el-form-item>
           </el-col>
@@ -95,6 +105,7 @@
       return {
         title: 'Create Contest',
         disableRuleType: false,
+        discussStatus: false,
         contest: {
           title: '',
           description: '',
@@ -134,6 +145,12 @@
         if (index !== -1) {
           this.contest.allowed_ip_ranges.splice(index, 1)
         }
+      },
+      setDiscussStatus (status) {
+        console.log(status)
+        let flag = status + 0
+        console.log(flag)
+        api.setDiscussStatus(this.$route.params.contestId, flag)
       }
     },
     mounted () {
@@ -151,6 +168,16 @@
           }
           data.allowed_ip_ranges = ranges
           this.contest = data
+        }).catch(() => {
+        })
+        api.getContestCommentStatus(this.$route.params.contestId).then(res => {
+         // console.log(res.data)
+          if (res.data === 1) {
+            this.discussStatus = true
+          } else {
+            this.discussStatus = false
+          }
+          // console.log()
         }).catch(() => {
         })
       }

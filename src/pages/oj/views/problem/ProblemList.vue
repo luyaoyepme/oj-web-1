@@ -203,6 +203,7 @@
         this.loadings.table = true
         api.getProblemList(offset, this.limit, this.query).then(res => {
           this.loadings.table = false
+          console.log(res.data.data.results)
           this.total = res.data.data.total
           this.problemList = res.data.data.results
           if (this.isAuthenticated) {

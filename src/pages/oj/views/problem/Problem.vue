@@ -497,9 +497,10 @@
       DiscussRoute () {
         if (this.contestID) {
           // TODO
-          return { name: 'contest-submission-list', query: { problemID: this.problemID } }
+          return { name: 'contest-discuss-list', query: { problemID: this.problemID, title: this.problem.title, contestId: this.contestID } }
         } else {
-          return { name: 'discuss-list', query: { problemID: this.problemID } }
+          // console.log(this)
+          return { name: 'discuss-list', query: { problemID: this.problemID, title: this.problem.title } }
         }
       }
     },

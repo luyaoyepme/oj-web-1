@@ -207,9 +207,7 @@ export default {
     })
   },
   submitCode (data) {
-    return ajax('submission', 'post', {
-      data
-    })
+    return ajax('submission', data})
   },
   getSubmissionList (offset, limit, params) {
     params.limit = limit
@@ -276,22 +274,169 @@ export default {
       data
     })
   },
-  getDiscussList () {
-    axios({
-      method: 'post',
-      url: 'http://localhost:8081/api/topic/create',
-      data: {
-        title: '201904021450',
-        content: '111'
-      }
+  getDiscussList (id, sortType) {
+    let url = ''
+    // console.log(sortType)
+    if (sortType) {
+      url = `http://localhost:8081/api/problems/${id}/sort/${sortType}`
+    } else {
+      url = `http://localhost:8081/api/problems/${id}/topics`
+    }
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
+      mode: 'no-cors'
+    }).then(res => {
+      console.log(res)
+      return res.json()
+    }).then(json => {
+      // console.log('ok')
+      // console.log('获取的结果', json.data)
+      return json
     })
-      .then(function (response) {
-        console.log(response)
+  },
+  getContestDiscussList (problemId, contestId) {
+    console.log(problemId, contestId)
+    let url = `http://localhost:8081/api/contests/${contestId}/problem/${problemId}/topics`
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
+      mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      // console.log('ok')
+      // console.log('获取的结果', json.data)
+      return json
+    })
+  },
+  getDiscussListBykeyword (problemId, keyword) {
+    let url = `http://localhost:8081/api/topics/search?keywords=${keyword}&problemId=${problemId}`
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
+      mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      // console.log('ok')
+      // console.log('获取的结果', json.data)
+      return json
+    })
+  },
+  getTopic (id) {
+    let url = `http://localhost:8081/api/topics/${id}`
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
+      mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      // console.log('ok')
+      // console.log('获取的结果', json.data)
+      return json
+    })
+  },
+  voteThisTopic (topicId) {
+    let url = `http://localhost:8081/api/topics/vote?id=${topicId}`
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
+      mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      // console.log('ok')
+      console.log('获取的结果', json.data)
+      return json
+    })
+  },
+  getCurrentUsrLike (id) {
+    let url = `http://localhost:8081/api/topics/judge-vote?id=${id}`
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
+      mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      // console.log('ok')
+      // console.log('获取的结果', json.data)
+      return json
+    })
+  },
+  createNewTopic (data) {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `http://localhost:8081/api/topics?title=${data.title}&content=${data.content}&problemId=${data.problemId}`,
+        method: 'post',
+        data: {
+          title: data.title,
+          content: data.content,
+          problemId: data.problemId
+        }
       })
-      .catch(function (error) {
-        console.log(error)
+        .then((res) => {
+          resolve(res.data)
+          Vue.prototype.$success('Succeeded')
+          // console.log(res)
+        })
+        .catch(function (error) {
+          reject(error)
+          // console.log(error);
+        })
+    })
+  },
+  submmitComment (data) {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `http://localhost:8081/api/comments`,
+        method: 'post',
+        data: {
+          content: data.content,
+          topicId: data.id
+        }
       })
+        .then((res) => {
+          resolve(res.data)
+          Vue.prototype.$success('Succeeded')
+          // console.log(res)
+        })
+        .catch(function (error) {
+          reject(error)
+          // console.log(error);
+        })
+    })
   }
+  //   axios({
+  //     method: 'post',
+  //     url: `http://localhost:8081/api/topics?title=${data.title}&content=${data.content}&problemId=${data.problemId}`,
+  //     data: {
+  //       title: data.title,
+  //       content: data.content,
+  //       problemId: data.problemId
+  //     }
+  //   })
+  // }
 }
 
 /**
@@ -332,6 +477,8 @@ function ajax (url, method, options) {
       // API请求异常，一般为Server error 或 network error
       reject(res)
       Vue.prototype.$error(res.data.data)
+    }).catch(function (error) {
+      console.log(error)
     })
   })
 }

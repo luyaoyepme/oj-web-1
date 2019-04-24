@@ -16,6 +16,7 @@ import {
   SubmissionList,
   DiscussList,
   DiscussDetails,
+  test,
   UserHome
 } from '../views'
 
@@ -79,7 +80,7 @@ export default [
   },
   {
     name: 'discuss-details',
-    path: '/discuss/:id/',
+    path: '/discuss/:topicID/',
     meta: {title: 'Discuss Details'},
     component: DiscussDetails
   },
@@ -124,6 +125,12 @@ export default [
         name: 'acm-helper',
         path: 'helper',
         component: Contest.ACMContestHelper
+      },
+      {
+        name: 'contest-discuss-list',
+        path: '/discuss',
+        meta: {title: 'Discuss List'},
+        component: DiscussList
       }
     ]
   },
@@ -191,5 +198,11 @@ export default [
     path: '*',
     meta: {title: '404'},
     component: NotFound
+  },
+  {
+    path: '/test',
+    name: 'test',
+    meta: {title: 'test'},
+    component: test
   }
 ]

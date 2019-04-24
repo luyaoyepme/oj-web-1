@@ -294,6 +294,43 @@ export default {
     return ajax('export_problem', 'post', {
       data
     })
+  },
+  setDiscussStatus (contestId, flag) {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: `http://localhost:8081/api/contests/${contestId}/discuss-status?discussStatus=${flag}`,
+        method: 'post',
+        data: {
+          flag: flag
+        }
+      })
+        .then((res) => {
+          resolve(res.data)
+          Vue.prototype.$success('Succeeded')
+          // console.log(res)
+        })
+        .catch(function (error) {
+          reject(error)
+          // console.log(error);
+        })
+    })
+  },
+  getContestCommentStatus (contestId) {
+    let url = `http://localhost:8081/api/contests/${contestId}/discuss-status`
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
+      mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      // console.log('ok')
+      // console.log('获取的结果', json.data)
+      return json
+    })
   }
 }
 
