@@ -116,6 +116,7 @@
         next((vm) => {
           vm.contests = res.data.data.results
           vm.total = res.data.data.total
+          console.log(vm.contests)
         })
       }, (res) => {
         next()
@@ -161,7 +162,7 @@
           this.$error('Please login first.')
           this.$store.dispatch('changeModalStatus', {visible: true})
         } else {
-          this.$router.push({name: 'contest-details', params: {contestID: contest.id}})
+          this.$router.push({name: 'contest-details', params: {contestID: contest.id, created_byId: contest.created_by.id}})
         }
       },
 

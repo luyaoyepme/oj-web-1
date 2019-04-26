@@ -119,6 +119,7 @@
             }
           })
           this.sessions = sessions
+          // console.log(this.sessions)
         })
       },
       deleteSession (sessionKey) {

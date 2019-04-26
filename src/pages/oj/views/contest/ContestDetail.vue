@@ -46,7 +46,7 @@
         </VerticalMenu-item>
 
         <VerticalMenu-item :disabled="contestMenuDisabled"
-                           :route="{name: 'contest-problem-list', params: {contestID: contestID}}">
+                           :route="{name: 'contest-problem-list', params: {contestID: contestID, created_byId: created_byId}}">
           <Icon type="ios-photos"></Icon>
           {{$t('m.Problems')}}
         </VerticalMenu-item>
@@ -93,6 +93,7 @@
         btnLoading: false,
         contestID: '',
         contestPassword: '',
+        created_byId: '',
         columns: [
           {
             title: 'StartAt',
@@ -125,7 +126,9 @@
     },
     mounted () {
       this.contestID = this.$route.params.contestID
+      this.created_byId = this.$route.params.created_byId
       this.route_name = this.$route.name
+      // console.log(this.$route.params)
       this.$store.dispatch('getContest').then(res => {
         this.changeDomTitle({title: res.data.data.title})
         let data = res.data.data

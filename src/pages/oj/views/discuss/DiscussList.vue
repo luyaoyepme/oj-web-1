@@ -36,6 +36,7 @@
           </Table>
           <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
         </Card>
+         <!--     dialog-->
         <div class="topicwrapper">
           <div class="topic-create" style="background-color: #eeeeee">
             <i-form v-model="discuss" >
@@ -130,12 +131,14 @@
           table: true,
           tag: true
         },
+        created_byID: '',
         // 创建新贴
         showEditDiscussDialog: false,
         discussDialogTitle: 'create Topic',
         discuss: {
           title: '',
-          content: ''
+          content: '',
+          status: ''
         },
         // 帖子的关键字搜索
         query: {
@@ -156,10 +159,11 @@
         this.query.page = parseInt(query.page) || 1
         this.query.contestId = this.$route.query.contestId
         this.query.keyword = query.keyword || ''
-        this.routeName = this.$route.name
+        // this.routeName = this.$route.name
+        this.created_byId = this.$route.query.created_byId
         this.query.problemID = id
         this.showDialog(this.showEditDiscussDialog)
-        this.getDiscussList(id, this.$route.query.contestId)
+        this.getDiscussList(id, this.query.contestId, this.created_byId)
         if (this.query.page < 1) {
           this.query.page = 1
         }
@@ -172,13 +176,18 @@
         })
       },
       // 获取topic列表
-      getDiscussList (problemId, contestId) {
-        console.log(problemId, contestId)
+      getDiscussList (problemId, contestId, createdbyId) {
         if (contestId) {
-          api.getContestDiscussList(problemId, contestId).then(res => {
-            console.log('i m getting contest discuss')
-            this.discussList = res.data
-            // console.log(res.data)
+          api.getContestCommentStatus(contestId).then(res => {
+            console.log(this.$store.getters.user.id, createdbyId, res.data)
+            if (this.$store.getters.user.id.toString() === createdbyId || res.data === 1) {
+              api.getContestDiscussList(problemId, contestId).then(res => {
+                console.log('i m getting contest discuss')
+                this.discussList = res.data
+              })
+            } else {
+              this.discussList = []
+            }
           })
         } else {
           console.log('i m getting problem discuss')
@@ -207,17 +216,20 @@
         data = {
           title: this.discuss.title,
           content: this.discuss.content,
-          problemId: this.query.problemID
+          problemId: this.query.problemID,
+          contest_id: this.query.contestId,
+          discussStatus: 1,
+          userId: 1
           // visible: this.discuss.visible
         }
         // console.log(data)
-        if (this.query.contestID) {
-          data.contest_id = this.query.contestID
+        if (this.query.contestId) {
           funName = 'createNewContestTopic'
         } else {
           funName = 'createNewTopic'
         }
         api[funName](data).then(res => {
+          console.log(data)
           this.showEditDiscussDialog = false
           this.init()
         }).catch()

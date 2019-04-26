@@ -228,6 +228,7 @@
         captchaSrc: '',
         contestID: '',
         problemID: '',
+        created_byId: '',
         submitting: false,
         code: '',
         language: 'C++',
@@ -280,6 +281,7 @@
         this.$Loading.start()
         this.contestID = this.$route.params.contestID
         this.problemID = this.$route.params.problemID
+        this.created_byId = this.$route.params.created_byId
         let func = this.$route.name === 'problem-details' ? 'getProblem' : 'getContestProblem'
         api[func](this.problemID, this.contestID).then(res => {
           this.$Loading.finish()
@@ -497,7 +499,7 @@
       DiscussRoute () {
         if (this.contestID) {
           // TODO
-          return { name: 'contest-discuss-list', query: { problemID: this.problemID, title: this.problem.title, contestId: this.contestID } }
+          return { name: 'contest-discuss-list', query: { problemID: this.problemID, title: this.problem.title, contestId: this.contestID, created_byId: this.created_byId } }
         } else {
           // console.log(this)
           return { name: 'discuss-list', query: { problemID: this.problemID, title: this.problem.title } }

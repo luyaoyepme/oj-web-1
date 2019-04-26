@@ -95,7 +95,7 @@
       // 获取topic具体信息
       getTopic (id) {
         api.getTopic(id).then(res => {
-          console.log(res.data)
+          // console.log(res.data)
           this.topic.content = res.data.content
           this.topic.title = res.data.title
           this.topic.likeCount = res.data.likeCount

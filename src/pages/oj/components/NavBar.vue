@@ -92,6 +92,7 @@
     },
     mounted () {
       this.getProfile()
+       // console.log(user)
     },
     methods: {
       ...mapActions(['getProfile', 'changeModalStatus']),
