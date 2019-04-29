@@ -1,42 +1,87 @@
 <template>
-	<div class="discussList view">
+  <div class="discussList view">
     <div id="discuss-main">
       <Panel :padding="0" shadow>
-        <div slot="title">{{$route.query.problemID}}. {{$route.query.title}}</div>
-        <div slot="extra">
-          <li>
-            <Input
-              v-model="query.keyword"
-              @on-enter="filterByKeyword"
-              @on-click="filterByKeyword"
-              placeholder="Search topics or comments"
-              icon="ios-search-strong"
-              style="width:216px;"/>
-          </li>
+        <div slot="title">
+          <Tabs>
+            <Tab-pane label="ACMDiscuss" icon="ribbon-a">
+              <div class="sortWay">
+                <div class="sortWay-1">
+                  <li @click="filterByTag(5)"><label>Newest to Oldest</label></li>
+                  <li @click="filterByTag(2)"><label>Most Votes</label></li>
+                  <li @click="filterByTag(3)"><label>Most Posts</label></li>
+                  <li @click="filterByTag(4)"><label>Recent Activity</label></li>
+                  <li @click="filterByTag(1)"><label>Oldest to Newest</label></li>
+                  <li>
+                    <i-button type="primary" @click="showDialog(true)">
+                      New +
+                    </i-button>
+                  </li>
+                  <i-input icon="ios-search" placeholder="请输入..." style="width: 200px"></i-input>
+                </div>
+              </div>
+              <Card :padding="20" dis-hover style="margin-top: 20px">
+                <Table style="width: 100%; font-size: 16px;"
+                       :columns="discussTableColumns"
+                       :data="discussList"
+                       disabled-hover>
+                </Table>
+                <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
+              </Card>
+            </Tab-pane>
+            <Tab-pane label="CourseDiscuss" icon="university">
+              <div class="sortWay">
+                <div class="sortWay-1">
+                  <li @click="filterByTag(5)"><label>Newest to Oldest</label></li>
+                  <li @click="filterByTag(2)"><label>Most Votes</label></li>
+                  <li @click="filterByTag(3)"><label>Most Posts</label></li>
+                  <li @click="filterByTag(4)"><label>Recent Activity</label></li>
+                  <li @click="filterByTag(1)"><label>Oldest to Newest</label></li>
+                  <li>
+                    <i-button type="primary" @click="showDialog(true)">
+                      New +
+                    </i-button>
+                  </li>
+                  <i-input icon="ios-search" placeholder="请输入..." style="width: 200px"></i-input>
+                </div>
+              </div>
+              <Card :padding="20" dis-hover style="margin-top: 20px">
+                <Table style="width: 100%; font-size: 16px;"
+                       :columns="discussTableColumns"
+                       :data="discussList"
+                       disabled-hover>
+                </Table>
+                <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
+              </Card>
+            </Tab-pane>
+            <Tab-pane label="GeneralDiscuss" icon="happy-outline">
+              <div class="sortWay">
+                <div class="sortWay-1">
+                  <li @click="filterByTag(5)"><label>Newest to Oldest</label></li>
+                  <li @click="filterByTag(2)"><label>Most Votes</label></li>
+                  <li @click="filterByTag(3)"><label>Most Posts</label></li>
+                  <li @click="filterByTag(4)"><label>Recent Activity</label></li>
+                  <li @click="filterByTag(1)"><label>Oldest to Newest</label></li>
+                  <li>
+                    <i-button type="primary" @click="showDialog(true)">
+                      New +
+                    </i-button>
+                  </li>
+                  <i-input icon="ios-search" placeholder="请输入..." style="width: 200px"></i-input>
+                </div>
+              </div>
+              <Card :padding="20" dis-hover style="margin-top: 20px">
+                <Table style="width: 100%; font-size: 16px;"
+                       :columns="discussTableColumns"
+                       :data="discussList"
+                       disabled-hover>
+                </Table>
+                <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
+              </Card>
+            </Tab-pane>
+          </Tabs>
         </div>
-        <div class="sortWay">
-          <div class="sortWay-1">
-            <li @click="filterByTag(5)"><label>Newest to Oldest</label></li>
-            <li @click="filterByTag(2)"><label>Most Votes</label></li>
-            <li @click="filterByTag(3)"><label>Most Posts</label></li>
-            <li @click="filterByTag(4)"><label>Recent Activity</label></li>
-            <li @click="filterByTag(1)"><label>Oldest to Newest</label></li>
-            <li>
-              <i-button type="primary" @click="showDialog(true)">
-                New +
-              </i-button>
-            </li>
-          </div>
-        </div>
-        <Card :padding="20" dis-hover style="margin-top: 20px">
-          <Table style="width: 100%; font-size: 16px;"
-                 :columns="discussTableColumns"
-                 :data="discussList"
-                 disabled-hover>
-          </Table>
-          <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
-        </Card>
-         <!--     dialog-->
+        <!--     dialog-->
         <div class="topicwrapper">
           <div class="topic-create" style="background-color: #eeeeee">
             <i-form v-model="discuss" >
@@ -50,7 +95,7 @@
               </Form-item>
               <Form-item label="Content" prop="content" :height="400">
                 <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>
-<!--                <Simditor v-model="discuss.content" ></Simditor>-->
+                <!--                <Simditor v-model="discuss.content" ></Simditor>-->
               </Form-item>
               <div class="buttons">
                 <i-button @click="showDialog(false)">Cancel</i-button>
@@ -69,20 +114,44 @@
   import utils from '@/utils/utils'
   import Pagination from '@oj/components/Pagination'
   import Simditor from '../../../admin/components/Simditor.vue'
-
   export default {
-    name: 'DiscussList',
+    name: 'Discuss',
     components: {
       Pagination,
       Simditor
     },
     data () {
       return {
+        tagList: [
+          {
+            id: 2,
+            name: 'c'
+          },
+          {
+            id: 3,
+            name: 'c++'
+          },
+          {
+            id: 4,
+            name: 'java'
+          },
+          {
+            id: 5,
+            name: '查找'
+          },
+          {
+            id: 6,
+            name: '计算机'
+          },
+          {
+            id: 7,
+            name: '软件工程'
+          }
+        ],
         discussTableColumns: [
           {
             title: '#',
             key: 'id',
-            width: 80,
             render: (h, params) => {
               return h('Button', {
                 props: {
@@ -108,10 +177,6 @@
           {
             title: 'Creator',
             key: 'userId'
-          },
-          {
-            title: 'Created Time',
-            key: 'createdAt'
           },
           {
             title: 'Content',
@@ -145,7 +210,8 @@
           keyword: '',
           page: 1,
           contestId: '',
-          problemId: ''
+          tag: ''
+          // problemId: ''
         }
       }
     },
@@ -176,30 +242,12 @@
         })
       },
       // 获取topic列表
-      getDiscussList (problemId, contestId, createdbyId) {
-        let offset = (this.query.page - 1) * this.limit
-        console.log(this.$store)
-        if (contestId) {
-          api.getContestCommentStatus(contestId).then(res => {
-            console.log(this.$store.getters.user.id, createdbyId, res.data)
-            if (this.$store.getters.user.id.toString() === createdbyId || res.data === 1) {
-              api.getContestDiscussList(problemId, contestId).then(res => {
-                console.log('i m getting contest discuss')
-                console.log(res.data)
-                this.discussList = res.data
-              })
-            } else {
-              this.discussList = []
-            }
-          })
-        } else {
-          console.log('i m getting problem discuss')
-          api.getDiscussList(problemId).then(res => {
-            this.discussList = res.data
-            this.total = res.data.length
-            console.log(this.discussList)
-          })
-        }
+      getDiscussList () {
+        console.log('i m getting problem discuss')
+        api.getDiscussList(10001).then(res => {
+          this.discussList = res.data
+          // console.log(res.data)
+        })
       },
       // 列表按tag排序
       filterByTag (num) {
@@ -260,10 +308,10 @@
         }
       }
     }
-}
+  }
 </script>
 
-<style lang="less">
+<style scoped>
   li{
     list-style:none;
   }
@@ -334,5 +382,18 @@
   .close{
     float: right;
     cursor: pointer;
+  }
+  .taglist-title {
+    margin-left: -10px;
+    margin-bottom: -10px;
+  }
+
+  .tag-btn {
+    margin-right: 5px;
+    margin-bottom: 10px;
+  }
+
+  #pick-one {
+    margin-top: 10px;
   }
 </style>

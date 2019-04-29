@@ -20,6 +20,9 @@ axios.interceptors.request.use(
   }
 )
 
+const FORUM_BASE_URL = process.env.FORUM_URL
+console.log(FORUM_BASE_URL)
+
 export default {
   getWebsiteConf (params) {
     return ajax('website', 'get', {
@@ -132,6 +135,7 @@ export default {
         params[element] = searchParams[element]
       }
     })
+    console.log(params)
     return ajax('problem', 'get', {
       params: params
     })
@@ -275,11 +279,12 @@ export default {
     })
   },
   getDiscussList (id, sortType) {
+    console.log(FORUM_BASE_URL)
     let url = ''
     if (sortType) {
-      url = `http://localhost:8081/api/problems/${id}/sort/${sortType}`
+      url = `${FORUM_BASE_URL}/api/problems/${id}/sort/${sortType}`
     } else {
-      url = `http://localhost:8081/api/problems/${id}/topics`
+      url = `${FORUM_BASE_URL}/api/problems/${id}/topics`
     }
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
@@ -289,13 +294,13 @@ export default {
       return res.json()
     }).then(json => {
       // console.log('ok')
-      console.log('获取的结果', json.data)
+      // console.log('获取的结果', json.data)
       return json
     })
   },
   getContestDiscussList (problemId, contestId) {
     // console.log(problemId, contestId)
-    let url = `http://localhost:8081/api/contests/${contestId}/problem/${problemId}/topics`
+    let url = `${FORUM_BASE_URL}/api/contests/${contestId}/problem/${problemId}/topics`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -307,7 +312,7 @@ export default {
     })
   },
   getDiscussListBykeyword (problemId, keyword) {
-    let url = `http://localhost:8081/api/topics/search?keywords=${keyword}&problemId=${problemId}`
+    let url = `${FORUM_BASE_URL}/api/topics/search?keywords=${keyword}&problemId=${problemId}`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -318,7 +323,7 @@ export default {
     })
   },
   getTopic (id) {
-    let url = `http://localhost:8081/api/topics/${id}`
+    let url = `${FORUM_BASE_URL}/api/topics/${id}`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -329,7 +334,7 @@ export default {
     })
   },
   voteThisTopic (topicId) {
-    let url = `http://localhost:8081/api/topics/vote?id=${topicId}`
+    let url = `${FORUM_BASE_URL}/api/topics/vote?id=${topicId}`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -341,7 +346,7 @@ export default {
     })
   },
   getCurrentUsrLike (id) {
-    let url = `http://localhost:8081/api/topics/judge-vote?id=${id}`
+    let url = `${FORUM_BASE_URL}/api/topics/judge-vote?id=${id}`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -355,7 +360,7 @@ export default {
     console.log(data)
     return new Promise((resolve, reject) => {
       axios({
-        url: `http://localhost:8081/api/topics`,
+        url: `${FORUM_BASE_URL}/api/topics`,
         method: 'post',
         data: {
           title: data.title,
@@ -376,7 +381,7 @@ export default {
     console.log(data)
     return new Promise((resolve, reject) => {
       axios({
-        url: `http://localhost:8081/api/contests/problem/topic`,
+        url: `${FORUM_BASE_URL}/api/contests/problem/topic`,
         method: 'post',
         data: {
           title: data.title,
@@ -397,7 +402,7 @@ export default {
     })
   },
   getUsr () {
-    let url = `http://localhost:8081/api/user`
+    let url = `${FORUM_BASE_URL}/api/user`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       // body: JSON.stringify({title: 'test'}, {content: 'test'}),
@@ -414,55 +419,33 @@ export default {
     })
   },
   getContestCommentStatus (contestId) {
-    let url = `http://localhost:8081/api/contests/${contestId}/discuss-status`
+    let url = `${FORUM_BASE_URL}/api/contests/${contestId}/discuss-status`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
-      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
-      // headers: {
-      //   'Content-Type': 'application/x-www-form-urlencoded'
-      // },
       mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      return json
+    })
+  },
+  submmitComment (data) {
+    let url = FORUM_BASE_URL + '/api/comments'
+    return window.fetch(url, {credentials: 'include',
+      method: 'POST',
+      body: JSON.stringify({
+        content: data.content,
+        topicId: data.id}),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      mode: 'cors'
     }).then(res => {
       return res.json()
     }).then(json => {
       // console.log('ok')
       // console.log('获取的结果', json.data)
       return json
-    })
-  },
-  submmitComment (data) {
-    // let url = `http://localhost:8081/api/comments`
-    // return window.fetch(url, {credentials: 'include'}, {
-    //   method: 'POST',
-    //   body: JSON.stringify(data),
-    //   headers: {
-    //     'Content-Type': 'application/x-www-form-urlencoded'
-    //   },
-    //   mode: 'cors'
-    // }).then(res => {
-    //   return res.json()
-    // }).then(json => {
-    //   // console.log('ok')
-    //   // console.log('获取的结果', json.data)
-    //   return json
-    // })
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `http://localhost:8081/api/comments`,
-        method: 'post',
-        data: {
-          content: data.content,
-          topicId: data.id
-        }
-      })
-        .then((res) => {
-          resolve(res.data)
-          Vue.prototype.$success('Succeeded')
-          // console.log(res)
-        })
-        .catch(function (error) {
-          reject(error)
-        })
     })
   }
 }
@@ -480,6 +463,7 @@ function ajax (url, method, options) {
   } else {
     params = data = {}
   }
+  console.log(params)
   return new Promise((resolve, reject) => {
     axios({
       url,

@@ -8,6 +8,8 @@ axios.defaults.baseURL = '/api'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.xsrfCookieName = 'csrftoken'
 
+const FORUM_BASE_URL = process.env.FORUM_URL
+
 export default {
   // 登录
   login (username, password) {
@@ -298,7 +300,7 @@ export default {
   setDiscussStatus (contestId, flag) {
     return new Promise((resolve, reject) => {
       axios({
-        url: `http://localhost:8081/api/contests/${contestId}/discuss-status`,
+        url: `${FORUM_BASE_URL}/api/contests/${contestId}/discuss-status`,
         method: 'post',
         data: {
           discussStatus: flag
@@ -318,7 +320,7 @@ export default {
   changeDiscussStatus (contestId, flag) {
     return new Promise((resolve, reject) => {
       axios({
-        url: `http://localhost:8081/api/contests/${contestId}/discuss-status?discussStatus=${flag}`,
+        url: `${FORUM_BASE_URL}/api/contests/${contestId}/discuss-status?discussStatus=${flag}`,
         method: 'put'
       })
         .then((res) => {
@@ -333,7 +335,7 @@ export default {
     })
   },
   getContestCommentStatus (contestId) {
-    let url = `http://localhost:8081/api/contests/${contestId}/discuss-status`
+    let url = `${FORUM_BASE_URL}/api/contests/${contestId}/discuss-status`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       // body: JSON.stringify({title: 'test'}, {content: 'test'}),

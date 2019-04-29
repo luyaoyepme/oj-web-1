@@ -11,8 +11,9 @@ import Announcements from './general/Announcements.vue'
 const SubmissionList = () => import(/* webpackChunkName: "submission" */ '@oj/views/submission/SubmissionList.vue')
 const SubmissionDetails = () => import(/* webpackChunkName: "submission" */ '@oj/views/submission/SubmissionDetails.vue')
 
-const DiscussList = () => import(/* webpackChunkName: "submission" */ '@oj/views/discuss/DiscussList.vue')
-const DiscussDetails = () => import(/* webpackChunkName: "submission" */ '@oj/views/discuss/DiscussDetails.vue')
+const DiscussList = () => import(/* webpackChunkName: "DiscussList" */ '@oj/views/discuss/DiscussList.vue')
+const DiscussDetails = () => import(/* webpackChunkName: "DiscussDetails" */ '@oj/views/discuss/DiscussDetails.vue')
+const Discuss = () => import(/* webpackChunkName: "Discuss" */ '@oj/views/discuss/Discuss.vue')
 
 const ACMRank = () => import(/* webpackChunkName: "userRank" */ '@oj/views/rank/ACMRank.vue')
 const OIRank = () => import(/* webpackChunkName: "userRank" */ '@oj/views/rank/OIRank.vue')
@@ -28,7 +29,7 @@ export {
   ProblemList, Problem,
   ACMRank, OIRank,
   SubmissionList, SubmissionDetails,
-  DiscussList, DiscussDetails,
+  DiscussList, DiscussDetails, Discuss,
   ApplyResetPassword, ResetPassword
 }
 /* 组件导出分为两类, 一类常用的直接导出，另一类诸如Login, Logout等用懒加载,懒加载不在此处导出

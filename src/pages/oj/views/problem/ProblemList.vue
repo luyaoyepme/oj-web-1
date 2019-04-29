@@ -216,6 +216,7 @@
       getTagList () {
         api.getProblemTagList().then(res => {
           this.tagList = res.data.data
+          console.log(this.tagList)
           this.loadings.tag = false
         }, res => {
           this.loadings.tag = false

@@ -30,6 +30,10 @@
           {{$t('m.OI_Rank')}}
         </Menu-item>
       </Submenu>
+      <Menu-item name="/discuss/topics">
+        <Icon type="person-stalker"></Icon>
+        {{$t('m.Discuss')}}
+      </Menu-item>
       <Submenu name="about">
         <template slot="title">
           <Icon type="information-circled"></Icon>
@@ -99,6 +103,7 @@
       handleRoute (route) {
         if (route && route.indexOf('admin') < 0) {
           this.$router.push(route)
+          console.log(route)
         } else {
           window.open('/admin/')
         }

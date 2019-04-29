@@ -16,6 +16,7 @@ import {
   SubmissionList,
   DiscussList,
   DiscussDetails,
+  Discuss,
   UserHome
 } from '../views'
 
@@ -76,6 +77,12 @@ export default [
     path: '/discuss',
     meta: {title: 'Discuss List'},
     component: DiscussList
+  },
+  {
+    name: 'discuss',
+    path: '/discuss/topics',
+    meta: {title: 'Discuss List'},
+    component: Discuss
   },
   {
     name: 'discuss-details',

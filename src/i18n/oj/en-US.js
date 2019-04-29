@@ -56,6 +56,8 @@ export const m = {
   Settings: 'Settings',
   Management: 'Management',
   Logout: 'Logout',
+  //  discussLise.vue
+  Discuss: 'Discuss',
   // announcements.vue
   Refresh: 'Refresh',
   Back: 'Back',

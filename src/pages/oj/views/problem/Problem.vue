@@ -464,15 +464,6 @@
       },
       onCopyError (e) {
         this.$error('Failed to copy code')
-      },
-      handleTest () {
-        window.fetch('http://localhost:8081/topic/', {
-          method: 'get'
-        }).then(res => {
-          return res.json()
-        }).then(data => {
-          console.log(data)
-        })
       }
     },
     computed: {
