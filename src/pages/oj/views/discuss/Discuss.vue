@@ -94,8 +94,8 @@
                 <i-input v-model="discuss.title"></i-input>
               </Form-item>
               <Form-item label="Content" prop="content" :height="400">
-                <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>
-                <!--                <Simditor v-model="discuss.content" ></Simditor>-->
+<!--                <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>-->
+                <Simditor v-model="discuss.content" ></Simditor>
               </Form-item>
               <div class="buttons">
                 <i-button @click="showDialog(false)">Cancel</i-button>

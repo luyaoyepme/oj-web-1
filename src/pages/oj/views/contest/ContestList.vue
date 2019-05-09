@@ -1,7 +1,7 @@
 <template>
   <Row type="flex">
     <Col :span="24">
-    <Panel id="contest-card" shadow>
+    <Panel id="contest-card" shadow >
       <div slot="title">{{query.rule_type === '' ? 'All' : query.rule_type}} Contests</div>
       <div slot="extra">
         <ul class="filter">
@@ -73,7 +73,7 @@
         </li>
       </ol>
     </Panel>
-    <Pagination :total="total" :pageSize="limit" @on-change="getContestList" :current.sync="page"></Pagination>
+      <Pagination :total="total" :pageSize="limit" @on-change="getContestList" :current.sync="page"></Pagination>
     </Col>
   </Row>
 
@@ -96,6 +96,7 @@
     },
     data () {
       return {
+        modal1: true,
         page: 1,
         query: {
           status: '',

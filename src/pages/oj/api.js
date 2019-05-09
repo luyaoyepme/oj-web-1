@@ -379,27 +379,47 @@ export default {
   },
   createNewContestTopic (data) {
     console.log(data)
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `${FORUM_BASE_URL}/api/contests/problem/topic`,
-        method: 'post',
-        data: {
-          title: data.title,
-          content: data.content,
-          problemId: data.problemId,
-          discussStatus: data.discussStatus,
-          userId: data.userId,
-          contestId: data.contest_id
-        }
-      })
-        .then((res) => {
-          resolve(res.data)
-          Vue.prototype.$success('Succeeded')
-        })
-        .catch(function (error) {
-          reject(error)
-        })
+    let url = `${FORUM_BASE_URL}/api/contests/problem/topic`
+    return window.fetch(url, {credentials: 'include',
+      method: 'POST',
+      body: JSON.stringify({
+        title: data.title,
+        content: data.content,
+        problemId: data.problemId,
+        discussStatus: data.discussStatus,
+        userId: data.userId,
+        contestId: data.contest_id
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      mode: 'cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      return json
     })
+    // return new Promise((resolve, reject) => {
+    //   axios({
+    //     url: `${FORUM_BASE_URL}/api/contests/problem/topic`,
+    //     method: 'post',
+    //     data: {
+    //       title: data.title,
+    //       content: data.content,
+    //       problemId: data.problemId,
+    //       discussStatus: data.discussStatus,
+    //       userId: data.userId,
+    //       contestId: data.contest_id
+    //     }
+    //   })
+    //     .then((res) => {
+    //       resolve(res.data)
+    //       Vue.prototype.$success('Succeeded')
+    //     })
+    //     .catch(function (error) {
+    //       reject(error)
+    //     })
+    // })
   },
   getUsr () {
     let url = `${FORUM_BASE_URL}/api/user`
@@ -443,8 +463,6 @@ export default {
     }).then(res => {
       return res.json()
     }).then(json => {
-      // console.log('ok')
-      // console.log('获取的结果', json.data)
       return json
     })
   }

@@ -16,7 +16,7 @@
           <i id="likeCharge"  style="font-size: 20px;" @click="change()"></i>
           <icon type="ios-bell" size="20"></icon>
         </p>
-        <p class="body-content">讨论内容：{{this.topic.content}}</p>
+        <div v-html="this.topic.content" class="content-container markdown-body"></div>
       </Card>
       <Card :padding="20" dis-hover style="margin-top: 20px">
         <Table style="width: 100%; font-size: 16px;"
@@ -29,7 +29,7 @@
       <div class="layout-content">
         <i-form :model="comment">
           <Form-item label="在这里发表你的评论：">
-            <i-input v-model="comment.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>
+            <Simditor v-model="comment.content"></Simditor>
           </Form-item>
           <Form-item>
             <i-button type="primary" @click="submmitComment">提交</i-button>
@@ -41,9 +41,13 @@
 
 <script>
   import api from '@oj/api.js'
+  import Simditor from '../../components/Simditor.vue'
 
   export default {
     name: 'DiscussDetails',
+    components: {
+      Simditor
+    },
     data () {
       return {
         commentTableColumns: [
@@ -52,8 +56,9 @@
             key: 'userId'
           },
           {
-            title: 'Centent',
-            key: 'content'
+            title: 'Content',
+            key: 'content',
+            ellipsis: true
           },
           {
             title: 'Time',
@@ -102,6 +107,7 @@
           this.topic.userId = res.data.userId
           this.topic.createAt = res.data.createdAt
           this.commentList = res.data.comments
+          console.log(this.commentList)
         })
       },
       likeCharge () {

@@ -111,6 +111,7 @@
     },
     data () {
       return {
+        modal1: false,
         contestID: '',
         // 显示编辑公告对话框
         showEditAnnouncementDialog: false,

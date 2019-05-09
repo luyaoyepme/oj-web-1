@@ -1,5 +1,5 @@
 <template>
-	<div class="discussList view">
+	<div class="discussList view" style="overflow: auto;">
     <div id="discuss-main">
       <Panel :padding="0" shadow>
         <div slot="title">{{$route.query.problemID}}. {{$route.query.title}}</div>
@@ -25,6 +25,7 @@
               <i-button type="primary" @click="showDialog(true)">
                 New +
               </i-button>
+
             </li>
           </div>
         </div>
@@ -49,8 +50,8 @@
                 <i-input v-model="discuss.title"></i-input>
               </Form-item>
               <Form-item label="Content" prop="content" :height="400">
-                <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>
-<!--                <Simditor v-model="discuss.content" ></Simditor>-->
+<!--                <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>-->
+                <Simditor v-model="discuss.content" ></Simditor>
               </Form-item>
               <div class="buttons">
                 <i-button @click="showDialog(false)">Cancel</i-button>
@@ -78,6 +79,7 @@
     },
     data () {
       return {
+        modal1: true,
         discussTableColumns: [
           {
             title: '#',
@@ -91,7 +93,7 @@
                 },
                 on: {
                   click: () => {
-                    console.log(params)
+                    // console.log(params)
                     this.$router.push({ name: 'discuss-details', params: { topicID: params.row.id } })
                   }
                 },
@@ -110,16 +112,21 @@
             key: 'userId'
           },
           {
+            title: 'Content',
+            key: 'content',
+            ellipsis: true
+          },
+          {
             title: 'Created Time',
             key: 'createdAt'
           },
           {
-            title: 'Content',
-            key: 'content'
-          },
-          {
             title: 'Votes',
             key: 'likeCount'
+          },
+          {
+            title: 'ViewCount',
+            key: 'viewCount'
           }
         ],
         // 当前problem下所有帖子
@@ -169,7 +176,7 @@
         }
       },
       pushRouter () {
-        console.log(this.query)
+        // console.log(this.query)
         this.$router.push({
           name: 'discuss-list',
           query: utils.filterEmptyValue(this.query)
@@ -178,14 +185,14 @@
       // 获取topic列表
       getDiscussList (problemId, contestId, createdbyId) {
         let offset = (this.query.page - 1) * this.limit
-        console.log(this.$store)
+        // console.log(this.$store)
         if (contestId) {
           api.getContestCommentStatus(contestId).then(res => {
-            console.log(this.$store.getters.user.id, createdbyId, res.data)
+            // console.log(this.$store.getters.user.id, createdbyId, res.data)
             if (this.$store.getters.user.id.toString() === createdbyId || res.data === 1) {
               api.getContestDiscussList(problemId, contestId).then(res => {
-                console.log('i m getting contest discuss')
-                console.log(res.data)
+                // console.log('i m getting contest discuss')
+                // console.log(res.data)
                 this.discussList = res.data
               })
             } else {
@@ -193,17 +200,17 @@
             }
           })
         } else {
-          console.log('i m getting problem discuss')
+          // console.log('i m getting problem discuss')
           api.getDiscussList(problemId).then(res => {
             this.discussList = res.data
             this.total = res.data.length
-            console.log(this.discussList)
+            // console.log(this.discussList)
           })
         }
       },
       // 列表按tag排序
       filterByTag (num) {
-        console.log(num)
+        // console.log(num)
         api.getDiscussList(this.$route.query.problemID, num).then(res => {
           this.discussList = res.data
         })
@@ -233,7 +240,7 @@
           funName = 'createNewTopic'
         }
         api[funName](data).then(res => {
-          console.log(data)
+          // console.log(data)
           this.showEditDiscussDialog = false
           this.init()
         }).catch()
@@ -314,7 +321,7 @@
     /*display: block;*/
     padding: 20px;
     width:600px;
-    height:400px;
+    height:700px;
     border-radius: 5px;
     backround: rgba(58, 99, 101, 0.78);
     border: 1px solid #999999;
@@ -335,4 +342,6 @@
     float: right;
     cursor: pointer;
   }
+
+
 </style>
