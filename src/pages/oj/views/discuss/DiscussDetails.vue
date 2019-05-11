@@ -142,6 +142,7 @@
         }
         // console.log(data)
         api.submmitComment(data).then(res => {
+          this.comment.content = null
           // this.showEditDiscussDialog = false
           this.init()
         }).catch()

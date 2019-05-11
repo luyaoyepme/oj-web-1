@@ -134,7 +134,7 @@ export default [
       },
       {
         name: 'contest-discuss-list',
-        path: '/discuss',
+        path: 'discuss/:contestID',
         meta: {title: 'Discuss List'},
         component: DiscussList
       }

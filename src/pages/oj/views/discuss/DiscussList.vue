@@ -16,17 +16,9 @@
         </div>
         <div class="sortWay">
           <div class="sortWay-1">
-            <li @click="filterByTag(5)"><label>Newest to Oldest</label></li>
-            <li @click="filterByTag(2)"><label>Most Votes</label></li>
-            <li @click="filterByTag(3)"><label>Most Posts</label></li>
-            <li @click="filterByTag(4)"><label>Recent Activity</label></li>
-            <li @click="filterByTag(1)"><label>Oldest to Newest</label></li>
-            <li>
-              <i-button type="primary" @click="showDialog(true)">
+              <i-button type="primary"  id="showEdit" @click="showEditDiscussDialog = !showEditDiscussDialog">
                 New +
               </i-button>
-
-            </li>
           </div>
         </div>
         <Card :padding="20" dis-hover style="margin-top: 20px">
@@ -38,30 +30,38 @@
           <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
         </Card>
          <!--     dialog-->
-        <div class="topicwrapper">
-          <div class="topic-create" style="background-color: #eeeeee">
-            <i-form v-model="discuss" >
-              <div class="close">
-                <Icon type="ios-close-empty" size="20" @click="showDialog(false)"></Icon>
-              </div>
-              <div class="title">Create Topic
-              </div>
-              <Form-item label="Title" prop="title">
-                <i-input v-model="discuss.title"></i-input>
-              </Form-item>
-              <Form-item label="Content" prop="content" :height="400">
-<!--                <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>-->
-                <Simditor v-model="discuss.content" ></Simditor>
-              </Form-item>
-              <div class="buttons">
-                <i-button @click="showDialog(false)">Cancel</i-button>
-                <i-button type="primary" @click="createNewTopic">Create</i-button>
-              </div>
-            </i-form>
-          </div>
-        </div>
+<!--        <div class="topicwrapper">-->
+<!--          <div class="topic-create" style="background-color: #eeeeee">-->
+<!--            <i-form v-model="discuss" >-->
+<!--              <div class="close">-->
+<!--                <Icon type="ios-close-empty" size="20" @click="showDialog(false)"></Icon>-->
+<!--              </div>-->
+<!--              <div class="title">Create Topic-->
+<!--              </div>-->
+<!--              <Form-item label="Title" prop="title">-->
+<!--                <i-input v-model="discuss.title"></i-input>-->
+<!--              </Form-item>-->
+<!--              <Form-item label="Content" prop="content" :height="400">-->
+<!--&lt;!&ndash;                <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>&ndash;&gt;-->
+<!--                <Simditor v-model="discuss.content" ></Simditor>-->
+<!--              </Form-item>-->
+<!--              <div class="buttons">-->
+<!--                <i-button @click="showDialog(false)">Cancel</i-button>-->
+<!--                <i-button type="primary" @click="createNewTopic">Create</i-button>-->
+<!--              </div>-->
+<!--            </i-form>-->
+<!--          </div>-->
+<!--        </div>-->
       </Panel>
     </div>
+    <Modal v-model="showEditDiscussDialog">
+      <div id="pieChart-detail">
+        <ECharts  :initOptions="largePieInitOpts"></ECharts>
+      </div>
+      <div slot="footer">
+        <Button type="ghost" @click="showEditDiscussDialog=false">Close</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -80,11 +80,17 @@
     data () {
       return {
         modal1: true,
+        // echarts 无法获取隐藏dom的大小，需手动指定
+        largePieInitOpts: {
+          width: '500',
+          height: '480'
+        },
         discussTableColumns: [
           {
             title: '#',
             key: 'id',
             width: 80,
+            sortable: true,
             render: (h, params) => {
               return h('Button', {
                 props: {
@@ -118,15 +124,18 @@
           },
           {
             title: 'Created Time',
-            key: 'createdAt'
+            key: 'createdAt',
+            sortable: true
           },
           {
             title: 'Votes',
-            key: 'likeCount'
+            key: 'likeCount',
+            sortable: true
           },
           {
             title: 'ViewCount',
-            key: 'viewCount'
+            key: 'viewCount',
+            sortable: true
           }
         ],
         // 当前problem下所有帖子
@@ -164,12 +173,12 @@
         let id = this.$route.query.problemID
         let query = this.$route.query
         this.query.page = parseInt(query.page) || 1
-        this.query.contestId = this.$route.query.contestId
+       // console.log(this.$route.query)
+        this.query.contestId = this.$route.query.contestID
         this.query.keyword = query.keyword || ''
         // this.routeName = this.$route.name
         this.created_byId = this.$route.query.created_byId
         this.query.problemID = id
-        this.showDialog(this.showEditDiscussDialog)
         this.getDiscussList(id, this.query.contestId, this.created_byId)
         if (this.query.page < 1) {
           this.query.page = 1
@@ -191,7 +200,7 @@
             // console.log(this.$store.getters.user.id, createdbyId, res.data)
             if (this.$store.getters.user.id.toString() === createdbyId || res.data === 1) {
               api.getContestDiscussList(problemId, contestId).then(res => {
-                // console.log('i m getting contest discuss')
+                console.log('i m getting contest discuss')
                 // console.log(res.data)
                 this.discussList = res.data
               })
@@ -257,14 +266,6 @@
             window.fireEvent('onresize')
           }
         }, 0)
-      },
-      showDialog (flag) {
-        let odiv = document.getElementsByClassName('topicwrapper')[0]
-        if (flag) {
-          odiv.style.display = 'block'
-        } else {
-          odiv.style.display = 'none'
-        }
       }
     }
 }
@@ -342,6 +343,23 @@
     float: right;
     cursor: pointer;
   }
+  #pieChart {
+    .echarts {
+      height: 250px;
+      width: 210px;
+    }
 
+    #detail {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+  }
+
+  #pieChart-detail {
+    margin-top: 20px;
+    width: 500px;
+    height: 480px;
+  }
 
 </style>
