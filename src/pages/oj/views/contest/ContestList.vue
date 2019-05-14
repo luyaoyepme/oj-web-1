@@ -117,7 +117,6 @@
         next((vm) => {
           vm.contests = res.data.data.results
           vm.total = res.data.data.total
-          console.log(vm.contests)
         })
       }, (res) => {
         next()

@@ -6,7 +6,7 @@
         <div slot="extra">
           <li>
             <Input
-              v-model="query.keyword"
+              v-model="query.keywords"
               @on-enter="filterByKeyword"
               @on-click="filterByKeyword"
               placeholder="Search topics or comments"
@@ -29,37 +29,23 @@
           </Table>
           <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
         </Card>
-         <!--     dialog-->
-<!--        <div class="topicwrapper">-->
-<!--          <div class="topic-create" style="background-color: #eeeeee">-->
-<!--            <i-form v-model="discuss" >-->
-<!--              <div class="close">-->
-<!--                <Icon type="ios-close-empty" size="20" @click="showDialog(false)"></Icon>-->
-<!--              </div>-->
-<!--              <div class="title">Create Topic-->
-<!--              </div>-->
-<!--              <Form-item label="Title" prop="title">-->
-<!--                <i-input v-model="discuss.title"></i-input>-->
-<!--              </Form-item>-->
-<!--              <Form-item label="Content" prop="content" :height="400">-->
-<!--&lt;!&ndash;                <i-input v-model="discuss.content" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></i-input>&ndash;&gt;-->
-<!--                <Simditor v-model="discuss.content" ></Simditor>-->
-<!--              </Form-item>-->
-<!--              <div class="buttons">-->
-<!--                <i-button @click="showDialog(false)">Cancel</i-button>-->
-<!--                <i-button type="primary" @click="createNewTopic">Create</i-button>-->
-<!--              </div>-->
-<!--            </i-form>-->
-<!--          </div>-->
-<!--        </div>-->
       </Panel>
     </div>
     <Modal v-model="showEditDiscussDialog">
-      <div id="pieChart-detail">
-        <ECharts  :initOptions="largePieInitOpts"></ECharts>
+      <div>
+        <div slot="title" align="center" style="font-size: larger">Create Topic</div>
+        <i-form :model="discuss" label-position="top">
+          <Form-item label="Title">
+            <i-input v-model="discuss.title"></i-input>
+          </Form-item>
+          <Form-item label="Content">
+            <Simditor v-model="discuss.content"></Simditor>
+          </Form-item>
+        </i-form>
       </div>
       <div slot="footer">
-        <Button type="ghost" @click="showEditDiscussDialog=false">Close</Button>
+        <i-button type="primary" @click="createNewTopic(null)">Create</i-button>
+        <Button type="ghost" @click="showEditDiscussDialog=false">Cancel</Button>
       </div>
     </Modal>
   </div>
@@ -79,7 +65,6 @@
     },
     data () {
       return {
-        modal1: true,
         // echarts 无法获取隐藏dom的大小，需手动指定
         largePieInitOpts: {
           width: '500',
@@ -118,11 +103,6 @@
             key: 'userId'
           },
           {
-            title: 'Content',
-            key: 'content',
-            ellipsis: true
-          },
-          {
             title: 'Created Time',
             key: 'createdAt',
             sortable: true
@@ -158,8 +138,8 @@
         },
         // 帖子的关键字搜索
         query: {
-          keyword: '',
-          page: 1,
+          keywords: '',
+          // page: 1,
           contestId: '',
           problemId: ''
         }
@@ -169,14 +149,12 @@
       this.init()
     },
     methods: {
-      init () {
+      init: function () {
         let id = this.$route.query.problemID
         let query = this.$route.query
         this.query.page = parseInt(query.page) || 1
-       // console.log(this.$route.query)
         this.query.contestId = this.$route.query.contestID
-        this.query.keyword = query.keyword || ''
-        // this.routeName = this.$route.name
+        this.query.keywords = query.keywords || ''
         this.created_byId = this.$route.query.created_byId
         this.query.problemID = id
         this.getDiscussList(id, this.query.contestId, this.created_byId)
@@ -185,7 +163,6 @@
         }
       },
       pushRouter () {
-        // console.log(this.query)
         this.$router.push({
           name: 'discuss-list',
           query: utils.filterEmptyValue(this.query)
@@ -193,15 +170,11 @@
       },
       // 获取topic列表
       getDiscussList (problemId, contestId, createdbyId) {
-        let offset = (this.query.page - 1) * this.limit
-        // console.log(this.$store)
+        // let offset = (this.query.page - 1) * this.limit
         if (contestId) {
           api.getContestCommentStatus(contestId).then(res => {
-            // console.log(this.$store.getters.user.id, createdbyId, res.data)
             if (this.$store.getters.user.id.toString() === createdbyId || res.data === 1) {
               api.getContestDiscussList(problemId, contestId).then(res => {
-                console.log('i m getting contest discuss')
-                // console.log(res.data)
                 this.discussList = res.data
               })
             } else {
@@ -209,24 +182,30 @@
             }
           })
         } else {
-          // console.log('i m getting problem discuss')
           api.getDiscussList(problemId).then(res => {
             this.discussList = res.data
-            this.total = res.data.length
-            // console.log(this.discussList)
           })
         }
       },
       // 列表按tag排序
-      filterByTag (num) {
-        // console.log(num)
-        api.getDiscussList(this.$route.query.problemID, num).then(res => {
-          this.discussList = res.data
-        })
-      },
       // 列表按关键字排序
-      filterByKeyword () {
-        api.getDiscussListBykeyword(this.$route.query.problemID, this.query.keyword).then(res => {
+      filterByKeyword (data = undefined) {
+        let funName = ''
+        if (this.query.contestId) {
+          funName = 'getContestDiscussListBykeyword'
+          data = {
+            keywords: this.query.keywords,
+            problemId: this.query.problemId,
+            contestId: this.query.contestId
+          }
+        } else {
+          funName = 'getDiscussListBykeyword'
+          data = {
+            keywords: this.query.keywords,
+            problemId: this.query.problemId
+          }
+        }
+        api[funName]().then(res => {
           this.discussList = res.data
         })
       },
@@ -242,14 +221,13 @@
           userId: 1
           // visible: this.discuss.visible
         }
-        // console.log(data)
+        console.log(data)
         if (this.query.contestId) {
           funName = 'createNewContestTopic'
         } else {
           funName = 'createNewTopic'
         }
         api[funName](data).then(res => {
-          // console.log(data)
           this.showEditDiscussDialog = false
           this.init()
         }).catch()
@@ -343,19 +321,6 @@
     float: right;
     cursor: pointer;
   }
-  #pieChart {
-    .echarts {
-      height: 250px;
-      width: 210px;
-    }
-
-    #detail {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    }
-  }
-
   #pieChart-detail {
     margin-top: 20px;
     width: 500px;

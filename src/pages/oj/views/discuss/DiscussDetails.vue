@@ -1,18 +1,9 @@
 <template>
     <div class="discusslist view">
-<!--      <div style="background:#eee;padding: 20px">-->
-<!--        <Card :bordered="false">-->
-<!--          <p slot="title">{{this.$route.params.topicID}}.  {{this.topic.title}}</p>-->
-<!--          <p>用户：{{this.topic.userId}}</p>-->
-<!--          <p>创建于： {{this.topic.createAt}}</p>-->
-<!--          <p>{{this.topic.content}}</p>-->
-<!--        </Card>-->
-<!--      </div>-->
       <Card :bordered="true">
         <p slot="title">{{this.$route.params.topicID}}. {{this.topic.title}}</p>
         <p class="usrInfo">   用户：{{this.topic.userId}}
           创建于：{{this.topic.createAt}}
-<!--          <i class="ivu-icon ivu-icon-heart" style="font-size: 20px;" @click="change()"></i>-->
           <i id="likeCharge"  style="font-size: 20px;" @click="change()"></i>
           <icon type="ios-bell" size="20"></icon>
         </p>
@@ -24,9 +15,9 @@
                :data="commentList"
                disabled-hover>
         </Table>
-<!--        <Pagination :total='total' :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>-->
       </Card>
       <div class="layout-content">
+        <div slot="title" align="left" style="font-size: larger">Comment here</div>
         <i-form :model="comment">
           <Form-item label="在这里发表你的评论：">
             <Simditor v-model="comment.content"></Simditor>

@@ -8,5 +8,5 @@ module.exports = {
   NODE_ENV: '"development"',
   VERSION: version,
   USE_SENTRY: '0',
-  FORUM_URL: '"http://localhost:8081"'
+  FORUM_URL: '"http://acm.wh.sdu.edu.cn:8081"'
 }

@@ -21,7 +21,7 @@ axios.interceptors.request.use(
 )
 
 const FORUM_BASE_URL = process.env.FORUM_URL
-console.log(FORUM_BASE_URL)
+// console.log(FORUM_BASE_URL)
 
 export default {
   getWebsiteConf (params) {
@@ -211,7 +211,9 @@ export default {
     })
   },
   submitCode (data) {
-    return ajax('submission', {data})
+    return ajax('submission', 'post', {
+      data
+    })
   },
   getSubmissionList (offset, limit, params) {
     params.limit = limit
@@ -278,14 +280,9 @@ export default {
       data
     })
   },
-  getDiscussList (id, sortType) {
+  getDiscussList (id) {
     console.log(FORUM_BASE_URL)
-    let url = ''
-    if (sortType) {
-      url = `${FORUM_BASE_URL}/api/problems/${id}/sort/${sortType}`
-    } else {
-      url = `${FORUM_BASE_URL}/api/problems/${id}/topics`
-    }
+    let url = `${FORUM_BASE_URL}/api/problems/${id}/topics`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -293,13 +290,10 @@ export default {
       // console.log(res)
       return res.json()
     }).then(json => {
-      // console.log('ok')
-      // console.log('获取的结果', json.data)
       return json
     })
   },
   getContestDiscussList (problemId, contestId) {
-    // console.log(problemId, contestId)
     let url = `${FORUM_BASE_URL}/api/contests/${contestId}/problem/${problemId}/topics`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
@@ -312,6 +306,17 @@ export default {
     })
   },
   getDiscussListBykeyword (problemId, keyword) {
+    let url = `${FORUM_BASE_URL}/api/topics/search?keywords=${keyword}&problemId=${problemId}`
+    return window.fetch(url, {credentials: 'include'}, {
+      method: 'GET',
+      mode: 'no-cors'
+    }).then(res => {
+      return res.json()
+    }).then(json => {
+      return json
+    })
+  },
+  getContestDiscussListBykeyword (problemId, keyword) {
     let url = `${FORUM_BASE_URL}/api/topics/search?keywords=${keyword}&problemId=${problemId}`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
@@ -358,23 +363,23 @@ export default {
   },
   createNewTopic (data) {
     console.log(data)
-    return new Promise((resolve, reject) => {
-      axios({
-        url: `${FORUM_BASE_URL}/api/topics`,
-        method: 'post',
-        data: {
-          title: data.title,
-          content: data.content,
-          problemId: data.problemId
-        }
-      })
-        .then((res) => {
-          resolve(res.data)
-          Vue.prototype.$success('Succeeded')
-        })
-        .catch(function (error) {
-          reject(error)
-        })
+    let url = `${FORUM_BASE_URL}/api/topics`
+    return window.fetch(url, {credentials: 'include',
+      method: 'POST',
+      body: JSON.stringify({
+        title: data.title,
+        content: data.content,
+        problemId: data.problemId
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      mode: 'cors'
+    }).then(res => {
+      // Vue.prototype.$success('Succeeded')
+      return res.json()
+    }).then(json => {
+      return json
     })
   },
   createNewContestTopic (data) {
@@ -397,44 +402,6 @@ export default {
     }).then(res => {
       return res.json()
     }).then(json => {
-      return json
-    })
-    // return new Promise((resolve, reject) => {
-    //   axios({
-    //     url: `${FORUM_BASE_URL}/api/contests/problem/topic`,
-    //     method: 'post',
-    //     data: {
-    //       title: data.title,
-    //       content: data.content,
-    //       problemId: data.problemId,
-    //       discussStatus: data.discussStatus,
-    //       userId: data.userId,
-    //       contestId: data.contest_id
-    //     }
-    //   })
-    //     .then((res) => {
-    //       resolve(res.data)
-    //       Vue.prototype.$success('Succeeded')
-    //     })
-    //     .catch(function (error) {
-    //       reject(error)
-    //     })
-    // })
-  },
-  getUsr () {
-    let url = `${FORUM_BASE_URL}/api/user`
-    return window.fetch(url, {credentials: 'include'}, {
-      method: 'GET',
-      // body: JSON.stringify({title: 'test'}, {content: 'test'}),
-      // headers: {
-      //   'Content-Type': 'application/x-www-form-urlencoded'
-      // },
-      mode: 'no-cors'
-    }).then(res => {
-      return res.json()
-    }).then(json => {
-      // console.log('ok')
-      // console.log('获取的结果', json.data)
       return json
     })
   },
