@@ -242,7 +242,8 @@
         data = {
           title: this.discuss.title,
           content: this.discuss.content,
-          problemId: this.realproblemId,
+          problemId: this.problemID,
+          realproblemId: this.realproblemId,
           contest_id: this.contestID,
           discussStatus: this.discuss.status,
           userId: this.created_byId

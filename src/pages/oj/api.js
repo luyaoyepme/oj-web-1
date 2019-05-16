@@ -391,7 +391,7 @@ export default {
         content: data.content,
         contestId: data.contest_id,
         discussStatus: data.discussStatus,
-        problemId: data.problemId,
+        problemId: data.realproblemId,
         userId: data.userId
       }),
       headers: {
