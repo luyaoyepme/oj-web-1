@@ -76,11 +76,13 @@
         })
       },
       goContestProblem (row) {
+        console.log(row)
         this.$router.push({
           name: 'contest-problem-details',
           params: {
             contestID: this.$route.params.contestID,
             problemID: row._id,
+            realproblemId: row.id,
             created_byId: this.$route.params.created_byId
           }
         })

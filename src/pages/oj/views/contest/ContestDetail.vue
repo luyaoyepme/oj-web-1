@@ -129,6 +129,7 @@
       this.created_byId = this.$route.params.created_byId
       this.route_name = this.$route.name
       // console.log(this.$route.params)
+      // console.log(this.$store)
       this.$store.dispatch('getContest').then(res => {
         this.changeDomTitle({title: res.data.data.title})
         let data = res.data.data

@@ -135,7 +135,6 @@ export default {
         params[element] = searchParams[element]
       }
     })
-    console.log(params)
     return ajax('problem', 'get', {
       params: params
     })
@@ -305,8 +304,8 @@ export default {
       return json
     })
   },
-  getDiscussListBykeyword (problemId, keyword) {
-    let url = `${FORUM_BASE_URL}/api/topics/search?keywords=${keyword}&problemId=${problemId}`
+  getDiscussListBykeyword (data) {
+    let url = `${FORUM_BASE_URL}/api/topics/search?keywords=${data.keywords}&problemId=${data.problemId}`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -316,8 +315,8 @@ export default {
       return json
     })
   },
-  getContestDiscussListBykeyword (problemId, keyword) {
-    let url = `${FORUM_BASE_URL}/api/topics/search?keywords=${keyword}&problemId=${problemId}`
+  getContestDiscussListBykeyword (data) {
+    let url = `${FORUM_BASE_URL}/api/topics/search?keywords=${data.keywords}&problemId=${data.problemId}&contestId=${data.contestId}`
     return window.fetch(url, {credentials: 'include'}, {
       method: 'GET',
       mode: 'no-cors'
@@ -390,10 +389,10 @@ export default {
       body: JSON.stringify({
         title: data.title,
         content: data.content,
-        problemId: data.problemId,
+        contestId: data.contest_id,
         discussStatus: data.discussStatus,
-        userId: data.userId,
-        contestId: data.contest_id
+        problemId: data.problemId,
+        userId: data.userId
       }),
       headers: {
         'Content-Type': 'application/json'

@@ -57,16 +57,6 @@
             <Tab-pane label="GeneralDiscuss" icon="happy-outline">
               <div class="sortWay">
                 <div class="sortWay-1">
-                  <li @click="filterByTag(5)"><label>Newest to Oldest</label></li>
-                  <li @click="filterByTag(2)"><label>Most Votes</label></li>
-                  <li @click="filterByTag(3)"><label>Most Posts</label></li>
-                  <li @click="filterByTag(4)"><label>Recent Activity</label></li>
-                  <li @click="filterByTag(1)"><label>Oldest to Newest</label></li>
-                  <li>
-                    <i-button type="primary" @click="showDialog(true)">
-                      New +
-                    </i-button>
-                  </li>
                   <i-input icon="ios-search" placeholder="请输入..." style="width: 200px"></i-input>
                 </div>
               </div>

@@ -7,7 +7,6 @@
           <li>
             <Input
               v-model="query.keywords"
-              @on-enter="filterByKeyword"
               @on-click="filterByKeyword"
               placeholder="Search topics or comments"
               icon="ios-search-strong"
@@ -120,6 +119,9 @@
         ],
         // 当前problem下所有帖子
         discussList: [],
+        contestID: '',
+        problemID: '',
+        realproblemId: '',
         routeName: '',
         limit: 20,
         total: 0,
@@ -139,9 +141,7 @@
         // 帖子的关键字搜索
         query: {
           keywords: '',
-          // page: 1,
-          contestId: '',
-          problemId: ''
+          page: 1
         }
       }
     },
@@ -150,83 +150,105 @@
     },
     methods: {
       init: function () {
-        let id = this.$route.query.problemID
+        console.log(this.$store)
         let query = this.$route.query
         this.query.page = parseInt(query.page) || 1
-        this.query.contestId = this.$route.query.contestID
+        this.contestID = this.$route.query.contestId
         this.query.keywords = query.keywords || ''
         this.created_byId = this.$route.query.created_byId
-        this.query.problemID = id
-        this.getDiscussList(id, this.query.contestId, this.created_byId)
+        this.problemID = this.$route.query.problemID
+        this.realproblemId = this.$route.query.realProblemId
+        if (this.contestID) {
+          console.log(this.$route.query)
+          this.getContestDiscussList(this.realproblemId, this.contestID, this.created_byId)
+        } else {
+          this.getDiscussList(this.problemID)
+        }
         if (this.query.page < 1) {
           this.query.page = 1
         }
       },
       pushRouter () {
-        this.$router.push({
-          name: 'discuss-list',
-          query: utils.filterEmptyValue(this.query)
-        })
+        if (this.contestID) {
+          this.$router.push({
+            name: 'contest-discuss-list',
+            query: utils.filterEmptyValue(this.query)
+          })
+        } else {
+          this.$router.push({
+            name: 'discuss-list',
+            query: utils.filterEmptyValue(this.query)
+          })
+        }
       },
       // 获取topic列表
-      getDiscussList (problemId, contestId, createdbyId) {
-        // let offset = (this.query.page - 1) * this.limit
+      getContestDiscussList (problemId, contestId, createdbyId) {
+        console.log(problemId, contestId, createdbyId)
         if (contestId) {
+          console.log('i am getting contest discuss')
           api.getContestCommentStatus(contestId).then(res => {
-            if (this.$store.getters.user.id.toString() === createdbyId || res.data === 1) {
+            this.discuss.status = res.data
+            if (this.$store.getters.user.id === createdbyId || this.discuss.status === 1) {
               api.getContestDiscussList(problemId, contestId).then(res => {
                 this.discussList = res.data
+                // this.total = res.data.total
               })
             } else {
               this.discussList = []
             }
           })
-        } else {
-          api.getDiscussList(problemId).then(res => {
-            this.discussList = res.data
-          })
         }
+      },
+      getDiscussList (problemId) {
+        api.getDiscussList(problemId).then(res => {
+          console.log('i am getting  discuss')
+          this.discussList = res.data
+          // this.total = res.data.total
+        })
       },
       // 列表按tag排序
       // 列表按关键字排序
       filterByKeyword (data = undefined) {
         let funName = ''
-        if (this.query.contestId) {
+        if (this.contestID) {
           funName = 'getContestDiscussListBykeyword'
           data = {
             keywords: this.query.keywords,
-            problemId: this.query.problemId,
-            contestId: this.query.contestId
+            problemId: this.realproblemId,
+            contestId: this.contestID
           }
         } else {
           funName = 'getDiscussListBykeyword'
           data = {
             keywords: this.query.keywords,
-            problemId: this.query.problemId
+            problemId: this.problemID
           }
         }
-        api[funName]().then(res => {
+        api[funName](data).then(res => {
+          console.log(res.data)
           this.discussList = res.data
         })
       },
       // 创建新的topic
       createNewTopic (data = undefined) {
         let funName = ''
+        if (this.contestID) {
+          funName = 'createNewContestTopic'
+          console.log('i am create contest discuss')
+        } else {
+          funName = 'createNewTopic'
+          console.log('i am create a  discuss')
+        }
         data = {
           title: this.discuss.title,
           content: this.discuss.content,
-          problemId: this.query.problemID,
-          contest_id: this.query.contestId,
-          discussStatus: 1,
-          userId: 1
+          problemId: this.realproblemId,
+          contest_id: this.contestID,
+          discussStatus: this.discuss.status,
+          userId: this.created_byId
           // visible: this.discuss.visible
         }
         console.log(data)
-        if (this.query.contestId) {
-          funName = 'createNewContestTopic'
-        } else {
-          funName = 'createNewTopic'
-        }
         api[funName](data).then(res => {
           this.showEditDiscussDialog = false
           this.init()

@@ -178,6 +178,7 @@
     },
     methods: {
       init (simulate = false) {
+        // console.log(this.$store)
         this.routeName = this.$route.name
         let query = this.$route.query
         this.query.difficulty = query.difficulty || ''

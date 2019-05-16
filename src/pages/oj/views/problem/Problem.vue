@@ -238,6 +238,8 @@
         theme: 'solarized',
         submissionId: '',
         submitted: false,
+        createdBy_Id: '',
+        realProblemId: '',
         result: {
           result: 9
         },
@@ -285,6 +287,9 @@
         this.$Loading.start()
         this.contestID = this.$route.params.contestID
         this.problemID = this.$route.params.problemID
+        this.createdBy_Id = this.$route.params.created_byId
+        this.realProblemId = this.$route.params.realproblemId
+        console.log(this.$store)
         let func = this.$route.name === 'problem-details' ? 'getProblem' : 'getContestProblem'
         api[func](this.problemID, this.contestID).then(res => {
           this.$Loading.finish()
@@ -493,7 +498,7 @@
       DiscussRoute () {
         if (this.contestID) {
           // TODO
-          return { name: 'contest-discuss-list', query: { problemID: this.problemID, title: this.problem.title, contestId: this.contestID, created_byId: this.created_byId } }
+          return { name: 'contest-discuss-list', query: { problemID: this.problemID, realProblemId: this.realProblemId, title: this.problem.title, contestId: this.contestID, created_byId: this.createdBy_Id } }
         } else {
           // console.log(this)
           return { name: 'discuss-list', query: { problemID: this.problemID, title: this.problem.title } }

@@ -105,7 +105,7 @@
       return {
         title: 'Create Contest',
         disableRuleType: false,
-        discussStatus: false,
+        discussStatus: true,
         contest: {
           title: '',
           description: '',
